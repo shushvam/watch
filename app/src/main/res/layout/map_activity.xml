@@ -124,6 +124,7 @@
             android:layout_marginRight="5dp"
             android:layout_marginBottom="50dp"
             android:background="@color/cardview_light_background"
+            android:onClick="sendSMS"
             android:text="@string/contacts" />
 
     </RelativeLayout>

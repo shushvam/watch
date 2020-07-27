@@ -1,5 +1,6 @@
 package com.throwntech.staysafe;
 
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -51,7 +52,7 @@ public class MyReceiver extends BroadcastReceiver {
 
                 //For Camera ID:1
                 if (msg.equals("C1 Leopard Detected")) {
-                    if (phoneNo.equals("+919457015587")) {
+                    if (phoneNo.equals("+918077672964")) {
                         Toast.makeText(context, "Message: " + msg + "\n Number: " + phoneNo, Toast.LENGTH_LONG).show();
 
                         mDatabase.child("a1/leopard/level").setValue("1");

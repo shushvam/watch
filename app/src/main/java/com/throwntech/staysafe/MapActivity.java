@@ -57,11 +57,28 @@ import static com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import static com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import static com.throwntech.staysafe.R.drawable.ic_red_alert;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.os.Bundle;
+import android.widget.Toast;
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.os.Bundle;
+import android.telephony.SmsManager;
+import android.view.View;
+import android.widget.EditText;
+
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, OnMarkerClickListener {
 
     private static final String TAG = "MapActivity";
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
     private static final String COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
+    private static final int MY_PERMISSIONS_REQUEST_RECEIVE_SMS = 0;
 
     private Boolean mLocationPermissionGranted = false;
     private GoogleMap mMap;
@@ -239,13 +256,19 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private static final String CHANNEL_DESC="LEOPARD DETECTED";
 
     Button sos_button;
-    Button contact_Button;
+    Button send;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getSupportActionBar().hide();
         setContentView(R.layout.map_activity);
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECEIVE_SMS) != PackageManager.PERMISSION_GRANTED) {
+            if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.RECEIVE_SMS)) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECEIVE_SMS}, MY_PERMISSIONS_REQUEST_RECEIVE_SMS);
+            }
+        }
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID,CHANNEL_NAME,NotificationManager.IMPORTANCE_DEFAULT);
@@ -323,32 +346,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         });
 
         //Open contacts list according to date
-        contact_Button = findViewById(R.id.button2);
-        contact_Button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openActivity2();
-            }
 
-            void openActivity2() {
-                @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("dd");
-                String currentDateAndTime = sdf.format(new Date());
-                Log.d("date", currentDateAndTime);
-                int date_check = Integer.parseInt(currentDateAndTime);
-
-                if (date_check <= 10) {
-                    Intent intent1 = new Intent(MapActivity.this, activity_contacts_1.class);
-                    startActivity(intent1);
-                }
-                else if (date_check <= 20) {
-                    Intent intent2 = new Intent(MapActivity.this, activity_contacts_2.class);
-                    startActivity(intent2);
-                } else {
-                    Intent intent3 = new Intent(MapActivity.this, activity_contacts_3.class);
-                    startActivity(intent3);
-                }
-            }
-        });
     }
 
     private void initMap(){
@@ -381,6 +379,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         Log.d(TAG, "onRequestPermissionsResult: called.");
         mLocationPermissionGranted = false;
+
+
+
         if (requestCode == 1234) {
             if (grantResults.length > 0) {
                 for (int grantResult : grantResults) {
